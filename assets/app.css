@@ -18,7 +18,7 @@ body {
   align-items: center;
 }
 
-.col h2 {
+.col h3 {
   padding: 10px;
   color: #fff;
   border: 1px solid #fff;
@@ -27,7 +27,7 @@ body {
   background: #333;
 }
 
-.col h2:hover {
+.col h3:hover {
   background: rgb(22, 22, 22);
   cursor: pointer;
 }
@@ -35,7 +35,7 @@ body {
 .col button {
   border: 1px solid #fff;
   background: #333;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #fff;
   padding: 10px 14px;
   border-radius: 10px;
