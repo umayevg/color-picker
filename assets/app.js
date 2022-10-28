@@ -18,6 +18,16 @@ document.addEventListener("click", event => {
 
     node.classList.toggle("fa-lock-open")
     node.classList.toggle("fa-lock")
+  } else if (type === "copy") {
+    event.target.parentElement.querySelector(
+        ".tooltiptext"
+      ).style.visibility = "visible"
+    setTimeout(() => {
+      event.target.parentElement.querySelector(
+        ".tooltiptext"
+      ).style.visibility = "hidden"
+    }, 2000)
+    copyToClipboard(event.target.textContent)
   }
 })
 
