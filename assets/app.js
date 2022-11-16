@@ -2,67 +2,112 @@ const cols = document.querySelectorAll(".col")
 
 // Listening for Space button
 document.addEventListener("keydown", event => {
-  event.preventDefault()
-  if (event.code.toLowerCase() === "space") {
-    getRandomColors()
-  }
+    event.preventDefault()
+    console.log(event.target)
+    if (event.code.toLowerCase() === "space" || event.target.classList.contains('random-colors-button')) {
+        getRandomColors()
+    }
 })
 
 document.addEventListener("click", event => {
-  const type = event.target.dataset.type
-  if (type === "lock") {
-    const node =
-      event.target.tagName.toLowerCase() === "i"
-        ? event.target
-        : event.target.children[0]
+    event.preventDefault()
+    const classes = event.target.classList
+    if (classes.contains('random-colors-button') || classes.contains('fa-rotate-right')) {
+        getRandomColors()
+    }
+})
 
-    node.classList.toggle("fa-lock-open")
-    node.classList.toggle("fa-lock")
-  } else if (type === "copy") {
-    event.target.parentElement.querySelector(
-        ".tooltiptext"
-      ).style.visibility = "visible"
-    setTimeout(() => {
-      event.target.parentElement.querySelector(
-        ".tooltiptext"
-      ).style.visibility = "hidden"
-    }, 2000)
-    copyToClipboard(event.target.textContent)
-  }
+document.addEventListener("click", event => {
+    const type = event.target.dataset.type
+    if (type === "lock") {
+        const node =
+            event.target.tagName.toLowerCase() === "i"
+                ? event.target
+                : event.target.children[0]
+
+        // Switching lock icons
+        node.classList.toggle("fa-lock-open")
+        node.classList.toggle("fa-lock")
+    } else if (type === "copy") {
+        // Tooltip show
+        event.target.parentElement.querySelector(".tooltiptext").style.visibility =
+            "visible"
+
+        // Tooltip hidden
+        setTimeout(() => {
+            event.target.parentElement.querySelector(
+                ".tooltiptext"
+            ).style.visibility = "hidden"
+        }, 1500)
+
+        // Copying to clipboard
+        copyToClipboard(event.target.textContent)
+    }
 })
 
 // Function sets random color to the column
-function getRandomColors() {
-  cols.forEach(col => {
-    const isLocked = col.querySelector("i").classList.contains("fa-lock")
-    const text = col.querySelector("h3")
-    const color = generateRandomColor()
+function getRandomColors(isInitial) {
+    const colors = isInitial ? getColorsFromUrlHash() : []
+    cols.forEach((col, index) => {
+        const isLocked = col.querySelector("i").classList.contains("fa-lock")
+        const text = col.querySelector("h3")
 
-    if (isLocked) {
-      return
-    }
-    col.style.background = color
-    text.innerText = color
-  })
+        if (isLocked) {
+            colors.push(text.textContent)
+            return
+        }
+        const color = isInitial
+            ? colors[index]
+                ? colors[index]
+                : generateRandomColor()
+            : generateRandomColor()
+
+
+        if (!isInitial) {
+            colors.push(color)
+        }
+
+        text.textContent = color
+        col.style.background = color
+    })
+
+    updateColorsCodesInUrlHash(colors)
 }
 
+
+// This function copies color code to clipboard
 function copyToClipboard(text) {
-  return navigator.clipboard.writeText(text)
+    return navigator.clipboard.writeText(text)
 }
 
-// Genrates random color
+// Generates random color
 function generateRandomColor() {
-  // rgb
-  // #0000FF
-  // 0 -> F
+    // rgb
+    // #0000FF
+    // 0 -> F
 
-  const hexCodes = "0123456789ABCDEF"
-  let color = ""
-  for (let i = 0; i < 6; i++) {
-    color += hexCodes[Math.floor(Math.random() * hexCodes.length)]
-  }
+    const hexCodes = "0123456789ABCDEF"
+    let color = ""
+    for (let i = 0; i < 6; i++) {
+        color += hexCodes[Math.floor(Math.random() * hexCodes.length)]
+    }
 
-  return "#" + color
+    return `#${color}`
 }
 
-getRandomColors()
+
+function updateColorsCodesInUrlHash(colors = []) {
+    document.location.hash = colors
+        .map(color => color.toString().substring(1))
+        .join('-')
+}
+
+function getColorsFromUrlHash() {
+    if (document.location.hash.length > 1) {
+        return document.location.hash.substring(1).split('-').map(color => '#' + color)
+    }
+
+    return []
+}
+
+getRandomColors(true)
